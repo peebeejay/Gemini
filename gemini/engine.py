@@ -124,6 +124,9 @@ class backtest():
         print("\n--------- Supplementary Data ----------\n")
         print("Start Price  : {0}".format(round(start_price, 5)))
         print("End Price    : {0}".format(round(final_price, 5)))
+        print("Closed Pos'ns:")
+        for closed_trade in self.account.closed_trades:
+            print("  -", str(closed_trade))
 
         print("\n---------------------------------------")
 

@@ -47,11 +47,11 @@ class closed_trade(opened_trade):
         self.exit   = float(exit)
 
     def __str__(self):
-        return "{0}\n{1}\n{2}\n{3}\n{4}".format(self.type, 
-                                                self.date, 
-                                                self.shares, 
-                                                self.entry, 
-                                                self.exit)
+        return "Type: {0}, Date: {1}, Shares: {2}, Entry: {3}, Exit: {4}".format(self.type,
+                                                self.date,
+                                                round(self.shares, 5),
+                                                round(self.entry, 5),
+                                                round(self.exit, 5))
 
 class position:
     """A parent object representing a position."""
