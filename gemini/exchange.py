@@ -14,7 +14,7 @@ class opened_trade():
 
         :return: A trade
         :rtype: trade
-        """  
+        """
         self.type = type
         self.date = date
 
@@ -24,7 +24,7 @@ class opened_trade():
 class closed_trade(opened_trade):
     """An object representing a closed trade."""
 
-    def __init__(self, type, date, shares, entry, exit):
+    def __init__(self, type, date, shares, entry, exit): # pylint: disable=redefined-builtin
         """Initate the trade.
 
         :param type: Type of trade
@@ -40,12 +40,12 @@ class closed_trade(opened_trade):
 
         :return: A trade
         :rtype: trade
-        """  
+        """
         super().__init__(type, date)
         self.shares = float(shares)
         self.entry  = float(entry)
         self.exit   = float(exit)
-    
+
     def __str__(self):
         return "{0}\n{1}\n{2}\n{3}\n{4}".format(self.type, 
                                                 self.date, 
@@ -72,14 +72,14 @@ class position:
 
         :return: A position
         :rtype: position
-        """    
+        """
         self.no            = no
         self.type          = "None"
         self.entry_price   = float(entry_price)
         self.shares        = float(shares)
         self.exit_price    = float(exit_price)
         self.stop_loss     = float(stop_loss)
-    
+
     def show(self):
         print("No.     {0}".format(self.no))
         print("Type:   {0}".format(self.type))
@@ -152,7 +152,7 @@ class short_position(position):
 
         :return: A short position
         :rtype: short_position
-        """       
+        """
         if exit_price is False: exit_price = 0
         if stop_loss is False: stop_loss = math.inf
         super().__init__(no, entry_price, shares, exit_price, stop_loss)
@@ -172,9 +172,9 @@ class short_position(position):
         entry = self.shares * percent * self.entry_price
         exit = self.shares * percent * current_price
         self.shares *= 1.0 - percent
-        if entry - exit + entry <= 0: 
+        if entry - exit + entry <= 0:
             return 0
-        else: 
+        else:
             return entry - exit + entry
 
     def stop_hit(self, current_price):
@@ -192,7 +192,7 @@ class account():
 
         :return: An account object
         :rtype: account
-        """ 
+        """
         self.initial_capital = float(initial_capital)
         self.buying_power    = float(initial_capital)
         self.no              = 0
@@ -217,16 +217,16 @@ class account():
         :type stop_loss: float
         :param commision: Percent commission subtracted from position size
         :type commision: float
-        """ 
+        """
         entry_capital = float(entry_capital)
-        
-        if entry_capital < 0: 
-            raise ValueError("Error: Entry capital must be positive")          
-        elif entry_price < 0: 
+
+        if entry_capital < 0:
+            raise ValueError("Error: Entry capital must be positive")
+        elif entry_price < 0:
             raise ValueError("Error: Entry price cannot be negative.")
-        elif self.buying_power < entry_capital: 
-            raise ValueError("Error: Not enough buying power to enter position")          
-        else: 
+        elif self.buying_power < entry_capital:
+            raise ValueError("Error: Not enough buying power to enter position")
+        else:
             self.buying_power -= entry_capital
             if commission > 0:
                 shares = entry_capital / (entry_price + commission * entry_price)
@@ -236,22 +236,22 @@ class account():
             if type == 'long':
                 self.positions.append(long_position(self.no,
                                                     entry_price,
-                                                    shares, 
+                                                    shares,
                                                     exit_price,
                                                     stop_loss))
-            elif type == 'short': 
-                self.positions.append(short_position(self.no, 
+            elif type == 'short':
+                self.positions.append(short_position(self.no,
                                                      entry_price,
-                                                     shares, 
+                                                     shares,
                                                      exit_price,
                                                      stop_loss))
-            else: 
+            else:
                 raise TypeError("Error: Invalid position type.")
 
             self.opened_trades.append(opened_trade(type, self.date))
-            self.no += 1    
+            self.no += 1
 
-    def close_position(self, position, percent, current_price, commission=0):
+    def close_position(self, position, percent: float, current_price: float, commission: float=0):
         """Close a position.
 
         :param position: Position id number
@@ -262,18 +262,18 @@ class account():
         :type current_price: float
         :param commision: Percent commission subtracted from capital returned
         :type commision: float
-        """ 
-        if percent > 1 or percent < 0: 
+        """
+        if percent > 1 or percent < 0:
             raise ValueError("Error: Percent must range between 0-1.")
         elif current_price < 0:
-            raise ValueError("Error: Current price cannot be negative.")                
-        else: 
-            self.closed_trades.append(closed_trade(position.type, 
-                                                   self.date, 
-                                                   position.shares * percent, 
-                                                   position.entry_price, 
+            raise ValueError("Error: Current price cannot be negative.")
+        else:
+            self.closed_trades.append(closed_trade(position.type,
+                                                   self.date,
+                                                   position.shares * percent,
+                                                   position.entry_price,
                                                    current_price))
-            
+
             if commission > 0:
                 closing_position_price = position.close(percent, current_price)
                 self.buying_power += (closing_position_price - closing_position_price * commission)
@@ -281,11 +281,11 @@ class account():
                 self.buying_power += position.close(percent, current_price)
 
     def purge_positions(self):
-        """Delete all empty positions.""" 
-        self.positions = [p for p in self.positions if p.shares > 0]        
+        """Delete all empty positions."""
+        self.positions = [p for p in self.positions if p.shares > 0]
 
     def show_positions(self):
-        """Show all account positions.""" 
+        """Show all account positions."""
         for p in self.positions: p.show()
 
     def total_value(self, current_price):
@@ -296,7 +296,7 @@ class account():
 
         :return: Total value of acocunt
         :rtype: float
-        """ 
+        """
         temporary = copy.deepcopy(self)
         for position in temporary.positions:
             temporary.close_position(position, 1.0, current_price)

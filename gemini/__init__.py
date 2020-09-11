@@ -1,4 +1,4 @@
-import gemini.settings
+from gemini import settings
 import pandas as pd
 
 PRECISION = getattr(settings, "PRECISION", 8)

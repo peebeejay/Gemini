@@ -21,7 +21,7 @@ def profit(initial_capital, multiplier):
 
     :return: Profit
     :rtype: float
-    """    
+    """
     return initial_capital * (multiplier + 1.0) - initial_capital
 
 class period():
