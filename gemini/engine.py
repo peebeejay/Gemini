@@ -91,10 +91,10 @@ class backtest():
     def results(self):
         """Print results"""
         print("-------------- Results ----------------\n")
-        being_price = self.data.iloc[0]['open']
+        start_price = self.data.iloc[0]['open']
         final_price = self.data.iloc[-1]['close']
 
-        pc = helpers.percent_change(being_price, final_price)
+        pc = helpers.percent_change(start_price, final_price)
         print("Buy and Hold : {0}%".format(round(pc*100, 2)))
         print("Net Profit   : {0}".format(
             round(helpers.profit(self.account.initial_capital, pc), 2)))
@@ -120,6 +120,11 @@ class backtest():
         print("Covers       : {0}".format(covers))
         print("--------------------")
         print("Total Trades : {0}".format(longs + sells + shorts + covers))
+
+        print("\n--------- Supplementary Data ----------\n")
+        print("Start Price  : {0}".format(round(start_price, 5)))
+        print("End Price    : {0}".format(round(final_price, 5)))
+
         print("\n---------------------------------------")
 
     def chart(self, show_trades=False, title="Equity Curve"):
