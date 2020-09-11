@@ -1,6 +1,4 @@
-# Load gemini
-from context import gemini
-from gemini  import data, engine, helpers
+from gemini import data, engine, helpers
 
 # Global Imports
 import pandas as pd
@@ -12,7 +10,7 @@ from talib.abstract import *
 def bands(df, timeperiod=26, nbdevup=2.6, nbdevdn=2.6, matype=0):
     cols = ['high', 'low', 'open', 'close', 'volume']
     HLOCV = {key: df[key].values for key in df if key in cols}
-    u, m, l = BBANDS(HLOCV, timeperiod=timeperiod, nbdevup=nbdevup, nbdevdn=nbdevdn, matype=matype)
+    u, m, l = BBANDS(HLOCV, timeperiod=timeperiod, nbdevup=nbdevup, nbdevdn=nbdevdn, matype=matype) # pylint: disable=undefined-variable
     df['upper']  = u
     df['middle'] = m
     df['lower']  = l
@@ -29,20 +27,20 @@ def logic(account, lookback):
     try:
         lookback = helpers.period(lookback)
         today = lookback.loc(0)
-        
+
         # Selling
         if today.touch_upper:
             exit_price = today.upper
-            for position in account.positions:  
+            for position in account.positions:
                 if position.type == 'long':
                     account.close_position(position, 1, exit_price)
 
         if today.crossing_up:
             exit_price = today.close
-            for position in account.positions:  
+            for position in account.positions:
                 if position.type == 'long':
                     account.close_position(position, 1, exit_price)
-                    
+
         # Buying
         if today.touch_lower | today.crossing_dn:
             risk          = 1
@@ -50,14 +48,14 @@ def logic(account, lookback):
             entry_capital = account.buying_power*risk
             if entry_capital > 0:
                 account.enter_position('long', entry_capital, entry_price)
-     
+
         if today.crossing_dn:
             risk          = 1
             entry_price   = today.close
             entry_capital = account.buying_power*risk
             if entry_capital > 0:
-                account.enter_position('long', entry_capital, entry_price)    
-    
+                account.enter_position('long', entry_capital, entry_price)
+
     except Exception as e:
         print(e)
         pass # Handles lookback errors in beginning of dataset
