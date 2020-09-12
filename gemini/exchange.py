@@ -1,6 +1,7 @@
 import copy
 import math
 
+
 class opened_trade():
     """An object representing an open trade."""
 
@@ -21,10 +22,11 @@ class opened_trade():
     def __str__(self):
         return "{0}\n{1}".format(self.type, self.date)
 
+
 class closed_trade(opened_trade):
     """An object representing a closed trade."""
 
-    def __init__(self, type, date, shares, entry, exit): # pylint: disable=redefined-builtin
+    def __init__(self, type, date, shares, entry, exit):  # pylint: disable=redefined-builtin
         """Initate the trade.
 
         :param type: Type of trade
@@ -43,15 +45,18 @@ class closed_trade(opened_trade):
         """
         super().__init__(type, date)
         self.shares = float(shares)
-        self.entry  = float(entry)
-        self.exit   = float(exit)
+        self.entry = float(entry)
+        self.exit = float(exit)
 
     def __str__(self):
         return "Type: {0}, Date: {1}, Shares: {2}, Entry: {3}, Exit: {4}".format(self.type,
-                                                self.date,
-                                                round(self.shares, 5),
-                                                round(self.entry, 5),
-                                                round(self.exit, 5))
+                                                                                 self.date,
+                                                                                 round(
+                                                                                     self.shares, 5),
+                                                                                 round(
+                                                                                     self.entry, 5),
+                                                                                 round(self.exit, 5))
+
 
 class position:
     """A parent object representing a position."""
@@ -73,12 +78,12 @@ class position:
         :return: A position
         :rtype: position
         """
-        self.no            = no
-        self.type          = "None"
-        self.entry_price   = float(entry_price)
-        self.shares        = float(shares)
-        self.exit_price    = float(exit_price)
-        self.stop_loss     = float(stop_loss)
+        self.no = no
+        self.type = "None"
+        self.entry_price = float(entry_price)
+        self.shares = float(shares)
+        self.exit_price = float(exit_price)
+        self.stop_loss = float(stop_loss)
 
     def show(self):
         print("No.     {0}".format(self.no))
@@ -87,6 +92,7 @@ class position:
         print("Shares: {0}".format(self.shares))
         print("Exit:   {0}".format(self.exit_price))
         print("Stop:   {0}\n".format(self.stop_loss))
+
 
 class long_position(position):
     """A child object representing a long position."""
@@ -109,8 +115,10 @@ class long_position(position):
         :rtype: long_position
         """
 
-        if exit_price is False: exit_price = math.inf
-        if stop_loss is False: stop_loss = 0
+        if exit_price is False:
+            exit_price = math.inf
+        if stop_loss is False:
+            stop_loss = 0
         super().__init__(no, entry_price, shares, exit_price, stop_loss)
         self.type = 'long'
 
@@ -131,7 +139,8 @@ class long_position(position):
 
     def stop_hit(self, current_price):
         if current_price <= self.stop_loss:
-            return(True)
+            return True
+
 
 class short_position(position):
     """A child object representing a short position."""
@@ -153,8 +162,10 @@ class short_position(position):
         :return: A short position
         :rtype: short_position
         """
-        if exit_price is False: exit_price = 0
-        if stop_loss is False: stop_loss = math.inf
+        if exit_price is False:
+            exit_price = 0
+        if stop_loss is False:
+            stop_loss = math.inf
         super().__init__(no, entry_price, shares, exit_price, stop_loss)
         self.type = 'short'
 
@@ -174,14 +185,15 @@ class short_position(position):
         self.shares *= 1.0 - percent
         if entry - exit + entry <= 0:
             return 0
-        else:
-            return entry - exit + entry
 
-    def stop_hit(self, current_price):
+        return entry - exit + entry
+
+    def stop_hit(self, current_price) -> bool:
         if current_price >= self.stop_loss:
-            return(True)
+            return True
 
-class account():
+
+class account():  # pylint: disable=too-many-instance-attributes
     """An object representing an exchange account."""
 
     def __init__(self, initial_capital):
@@ -194,15 +206,15 @@ class account():
         :rtype: account
         """
         self.initial_capital = float(initial_capital)
-        self.buying_power    = float(initial_capital)
-        self.no              = 0
-        self.date            = None
-        self.equity          = []
-        self.positions       = []
-        self.opened_trades   = []
-        self.closed_trades   = []
+        self.buying_power = float(initial_capital)
+        self.no = 0
+        self.date = None
+        self.equity = []
+        self.positions = []
+        self.opened_trades = []
+        self.closed_trades = []
 
-    def enter_position(self, type, entry_capital, entry_price, exit_price=False, stop_loss=False, commission=0):
+    def enter_position(self, type, entry_capital, entry_price, exit_price=False, stop_loss=False, commission=0):  # pylint: disable=too-many-arguments
         """Open a position.
 
         :param type: Type of position e.g. ("long, short")
@@ -225,11 +237,13 @@ class account():
         elif entry_price < 0:
             raise ValueError("Error: Entry price cannot be negative.")
         elif self.buying_power < entry_capital:
-            raise ValueError("Error: Not enough buying power to enter position")
+            raise ValueError(
+                "Error: Not enough buying power to enter position")
         else:
             self.buying_power -= entry_capital
             if commission > 0:
-                shares = entry_capital / (entry_price + commission * entry_price)
+                shares = entry_capital / \
+                    (entry_price + commission * entry_price)
             else:
                 shares = entry_capital / entry_price
 
@@ -251,7 +265,7 @@ class account():
             self.opened_trades.append(opened_trade(type, self.date))
             self.no += 1
 
-    def close_position(self, position, percent: float, current_price: float, commission: float=0):
+    def close_position(self, position, percent: float, current_price: float, commission: float = 0):
         """Close a position.
 
         :param position: Position id number
@@ -276,7 +290,8 @@ class account():
 
             if commission > 0:
                 closing_position_price = position.close(percent, current_price)
-                self.buying_power += (closing_position_price - closing_position_price * commission)
+                self.buying_power += (closing_position_price -
+                                      closing_position_price * commission)
             else:
                 self.buying_power += position.close(percent, current_price)
 
@@ -286,7 +301,8 @@ class account():
 
     def show_positions(self):
         """Show all account positions."""
-        for p in self.positions: p.show()
+        for p in self.positions:
+            p.show()
 
     def total_value(self, current_price):
         """Calculate total value of account
