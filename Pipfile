@@ -13,6 +13,7 @@ requests = "*"
 matplotlib = "*"
 DateTime = "*"
 ta-lib = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3.6"

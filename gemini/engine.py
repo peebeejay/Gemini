@@ -1,4 +1,5 @@
 import bokeh.plotting
+from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import warnings
@@ -30,6 +31,7 @@ class backtest():
             warnings.warn(msg)
 
         self.data = data
+        self.tracker = []
 
     def start(self, initial_capital, logic):
         """Start backtest.
@@ -46,7 +48,7 @@ class backtest():
         self.account = exchange.account(initial_capital)
 
         # Enter backtest ---------------------------------------------
-        for index, today in self.data.iterrows():
+        for index, today in tqdm(self.data.iterrows(), total=self.data.shape[0], ncols=100):
             date = today['date']
             equity = self.account.total_value(today['close'])
 
